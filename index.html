@@ -126,8 +126,11 @@
   .copy{background:var(--glass2);color:var(--txt);border:1px solid var(--line)}
   .wa{background:linear-gradient(90deg,#25D366,#1ebe5d);color:#04220f;box-shadow:0 10px 28px rgba(37,211,102,.35)}
 
-  .hint{color:var(--mut);font-size:12px;text-align:center;margin:34px auto 20px;max-width:620px;
-    border-top:1px solid var(--line);padding-top:18px;line-height:1.6}
+  .hint{color:var(--mut);font-size:12px;text-align:center;margin:34px auto 20px;max-width:640px;
+    border-top:1px solid var(--line);padding-top:18px;line-height:1.7}
+  .hint b{color:var(--txt)}
+  .hint code{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-size:11.5px;color:#bafce5}
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(40px);background:#0f2238;
     border:1px solid var(--line);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;
     opacity:0;pointer-events:none;transition:.3s;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.5)}
@@ -217,18 +220,18 @@
       <small>Seu nome e suas listas</small>
       <input type="text" id="meName" placeholder="Seu nome" value="Você">
       <label>Suas repetidas (o que tem sobrando)</label>
-      <textarea id="meRep" placeholder="Cole aqui suas FIGURINHAS REPETIDAS..."></textarea>
+      <textarea id="meRep" placeholder="Cole a lista do app OU digite à mão. Ex:&#10;MEX11, BRA5&#10;México: 11, 13&#10;BRA 5 9 14"></textarea>
       <label>Suas faltantes (o que precisa)</label>
-      <textarea id="meFalt" placeholder="Cole aqui suas FIGURINHAS FALTANDO..."></textarea>
+      <textarea id="meFalt" placeholder="Cole a lista do app OU digite à mão. Ex:&#10;FWC6, KOR14&#10;Coreia do Sul: 6, 14"></textarea>
     </div>
     <div class="panel fr">
       <div class="ptitle"><span class="dot"></span>🧑 Amigo</div>
       <small>Nome do amigo e as listas dele</small>
       <input type="text" id="frName" placeholder="Nome do amigo" value="Amigo">
       <label>Repetidas dele (o que ele tem sobrando)</label>
-      <textarea id="frRep" placeholder="Cole aqui as REPETIDAS do amigo..."></textarea>
+      <textarea id="frRep" placeholder="Cole a lista do app dele OU digite. Ex:&#10;RSA: 3, 4, 5&#10;SUI9, SUI10"></textarea>
       <label>Faltantes dele (o que ele precisa)</label>
-      <textarea id="frFalt" placeholder="Cole aqui as FALTANDO do amigo..."></textarea>
+      <textarea id="frFalt" placeholder="Cole a lista do app dele OU digite. Ex:&#10;SCO11, SCO15&#10;Escócia: 11, 15"></textarea>
     </div>
   </div>
 
@@ -240,7 +243,7 @@
   <div class="result" id="result"></div>
 
   <p class="hint">⚡ 100% offline — nada sai do seu aparelho, nada é salvo. Funciona no celular e no PC.<br>
-  Aceita o texto exato exportado pelo app do álbum (com bandeira, país e página).</p>
+  Funciona com <b>qualquer app</b> de figurinhas (cole a lista exportada) ou <b>digitando à mão</b> — ex: <code>MEX11</code>, <code>México: 11, 13</code>, <code>BRA 5 9 14</code>.</p>
 
   <blockquote class="verse">
     <span class="vq">“</span>
