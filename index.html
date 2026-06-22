@@ -225,46 +225,66 @@ o.style.left=Math.random()*100+'vw';o.style.background=c[i%c.length];
 o.style.animationDuration=(10+Math.random()*14)+'s';o.style.animationDelay=(-Math.random()*16)+'s';
 document.body.appendChild(o);}})();
 
-// Lê 3 formatos de export:
-//  (A) Oficial:  "🇲🇽 *MEX* · pg. 8-9"  +  "MEX11 (x1)"
-//  (B) Digitado: "México:"  +  "MEX11, MEX13"
-//  (C) Moovtech: "RSA: 3(1x), 4(1x), 5(2x)"  -> RSA3, RSA4, RSA5
+// === Parser UNIVERSAL (lê qualquer app/formato) ===
+// Entende códigos do álbum (MEX, RSA, FWC, CC...) e nomes de país (México, Brasil...).
+// Aceita: MEX11 · MEX 11 · MEX-11 · "RSA: 3,4,5" · "México: 11,13" · (x2)/(1x) · com/sem bandeira/pág.
+const KNOWN=new Set("FWC MEX RSA KOR CZE CAN BIH QAT SUI BRA MAR HAI SCO USA PAR AUS GER CUW CIV ECU NED JPN SWE TUN BEL EGY IRN NZL ESP CPV KSA URU FRA SEN IRQ NOR ARG ALG AUT JOR POR COD UZB COL ENG CRO GHA PAN CC".split(" "));
+const NAME2CODE=(function(){
+  const t={mexico:"MEX",africadosul:"RSA",southafrica:"RSA",coreiadosul:"KOR",coreia:"KOR",southkorea:"KOR",korea:"KOR",
+   tchequia:"CZE",chequia:"CZE",republicatcheca:"CZE",czechia:"CZE",czechrepublic:"CZE",canada:"CAN",bosnia:"BIH",
+   bosniaherzegovina:"BIH",catar:"QAT",qatar:"QAT",suica:"SUI",switzerland:"SUI",brasil:"BRA",brazil:"BRA",marrocos:"MAR",
+   morocco:"MAR",haiti:"HAI",escocia:"SCO",scotland:"SCO",estadosunidos:"USA",eua:"USA",unitedstates:"USA",usa:"USA",
+   paraguai:"PAR",paraguay:"PAR",australia:"AUS",alemanha:"GER",germany:"GER",curacao:"CUW",costadomarfim:"CIV",
+   ivorycoast:"CIV",cotedivoire:"CIV",equador:"ECU",ecuador:"ECU",holanda:"NED",paisesbaixos:"NED",netherlands:"NED",
+   japao:"JPN",japan:"JPN",suecia:"SWE",sweden:"SWE",tunisia:"TUN",belgica:"BEL",belgium:"BEL",egito:"EGY",egypt:"EGY",
+   ira:"IRN",irao:"IRN",iran:"IRN",novazelandia:"NZL",newzealand:"NZL",espanha:"ESP",spain:"ESP",caboverde:"CPV",
+   capeverde:"CPV",arabiasaudita:"KSA",saudiarabia:"KSA",uruguai:"URU",uruguay:"URU",franca:"FRA",france:"FRA",
+   senegal:"SEN",iraque:"IRQ",iraq:"IRQ",noruega:"NOR",norway:"NOR",argentina:"ARG",argelia:"ALG",algeria:"ALG",
+   austria:"AUT",jordania:"JOR",jordan:"JOR",portugal:"POR",rdcongo:"COD",congo:"COD",drcongo:"COD",uzbequistao:"UZB",
+   uzbekistan:"UZB",colombia:"COL",inglaterra:"ENG",england:"ENG",croacia:"CRO",croatia:"CRO",gana:"GHA",ghana:"GHA",
+   panama:"PAN",especiais:"FWC",bolaepaisessede:"FWC",historiadacopa:"FWC",colecaococacola:"CC",cocacola:"CC"};
+  return t;
+})();
+function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z]/g,"");}
+const FLAG_RE=/^\s*((?:[\u{1F1E6}-\u{1F1FF}]{2})|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})/u;
+const PAGE_RE=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
+
 function parseList(text){
   const codes=new Set(),meta={};
-  let cur={flag:"",name:"",page:""};
+  let cur={flag:"",name:"",page:""}, prefix="";
   const lines=(text||"").split(/\r?\n/);
-  const codeRe=/\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO)\b/g;
-  const pageRe=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
-  const flagRe=/^\s*((?:[\u{1F1E6}-\u{1F1FF}]{2})|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})/u;
-  // formato C: PREFIXO: numeros...
-  const inlineRe=/^\s*(?:(?:[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})\s*)?\*?([A-Z]{2,4})\*?\s*:\s*(.+)$/u;
-  function add(c){ codes.add(c); if(!meta[c]) meta[c]={flag:cur.flag,name:cur.name,page:cur.page}; }
+  function add(code,m){ codes.add(code); if(!meta[code]) meta[code]=m||{flag:cur.flag,name:cur.name||prefix,page:cur.page}; }
   for(let raw of lines){
-    const line=raw.trim(); if(!line) continue;
-    // (C) prefixo com números na mesma linha
-    const im=line.match(inlineRe);
-    if(im && !/pg\./i.test(line) && /\d/.test(im[2])){
-      const flag=(line.match(flagRe)||[""])[0].trim();
-      cur={flag:flag||"", name:im[1], page:""};
-      im[2].split(/[,;]/).forEach(ch=>{ const nm=ch.match(/(\d{1,2})/); if(nm) add(im[1]+nm[1]); });
-      continue;
+    let line=raw.trim(); if(!line) continue;
+    if(/^[-─—_=·•~.\s]+$/.test(line)) continue;                 // separadores
+    const flag=(line.match(FLAG_RE)||[""])[0].trim();
+    const pg=line.match(PAGE_RE);
+    const core=line.replace(FLAG_RE,"").trim();                 // sem bandeira
+    let clean=core.replace(/\([^)]*\)/g," ")                    // tira (1x)/(x2)/(...)
+                  .replace(/\b[xX]\s*\d+\b/g," ").replace(/\b\d+\s*[xX]\b/g," ")
+                  .replace(/\*/g," ");
+    // 1) Códigos completos em qualquer lugar (CODE + numero, sep opcional)
+    clean.replace(/([A-Z]{2,4})\s*[-–]?\s*0*(\d{1,2})/g,(full,c,n)=>{
+      if(KNOWN.has(c)){ prefix=c; cur={flag:flag||cur.flag,name:c,page:pg?pg[1].replace(/\s/g,""):cur.page};
+        add(c+n,{flag:cur.flag,name:c,page:cur.page}); }
+      return full;
+    });
+    // specials avulsos
+    clean.replace(/\b(BRON|PRAT|OURO)\b/g,(f,s)=>{ add(s,{flag:cur.flag,name:cur.name||"Extra",page:pg?pg[1]:cur.page}); return f;});
+    // 2) Cabeçalho por CÓDIGO isolado (sem número) ou por NOME -> define prefixo
+    let head="";
+    const coreH=core.replace(/^[^A-Za-z]+/,"");                 // tira *,·,etc do início
+    const mc=coreH.match(/^([A-Z]{2,4})\b/);
+    if(mc && KNOWN.has(mc[1])) head=mc[1];
+    if(!head){ const nm=norm(core.split(/[:(]/)[0]); if(NAME2CODE[nm]) head=NAME2CODE[nm]; }
+    if(head){ prefix=head; cur={flag:flag||cur.flag,name:head,page:pg?pg[1].replace(/\s/g,""):(head!==cur.name?"":cur.page)}; }
+    // 3) Números soltos -> prefixo + número
+    if(prefix){
+      let rest=clean.replace(/[A-Z]{2,4}\s*[-–]?\s*0*\d{1,2}/g," ")  // remove códigos completos já lidos
+                    .replace(/^\s*[A-Z]{2,4}\b/," ").replace(PAGE_RE," ");
+      let mm; const bn=/\b(\d{1,2})\b/g;
+      while((mm=bn.exec(rest))!==null) add(prefix+mm[1],{flag:cur.flag,name:prefix,page:cur.page});
     }
-    const pg=line.match(pageRe);
-    codeRe.lastIndex=0; const hasCode=codeRe.test(line);
-    const isColonHeader=/:\s*$/.test(line) && !hasCode;
-    // (A)/(B) cabeçalho de país
-    if(pg || isColonHeader){
-      const flag=(line.match(flagRe)||[""])[0].trim();
-      let name=""; const bold=line.match(/\*([^*]+)\*/);
-      if(bold){ name=bold[1].trim(); }
-      else{ name=line.replace(flagRe,"").replace(pageRe,"")
-                 .replace(/[·•|]/g," ").replace(/:\s*$/,"").replace(/\s{2,}/g," ").trim(); }
-      cur={flag:flag||"", name:name||cur.name, page:pg?pg[1].replace(/\s/g,""):""};
-      continue;
-    }
-    // (A)/(B) linha de figurinhas
-    let m; codeRe.lastIndex=0;
-    while((m=codeRe.exec(line))!==null) add(m[1]);
   }
   return {codes,meta};
 }
