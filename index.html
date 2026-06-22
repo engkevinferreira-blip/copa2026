@@ -141,10 +141,25 @@
     color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
   footer{text-align:center;color:var(--mut);font-size:12px;padding:8px 0 30px;line-height:1.7}
   footer b{color:var(--txt)}
-  .author{display:inline-flex;align-items:center;gap:7px;margin-top:6px;background:var(--glass);
-    border:1px solid var(--line);padding:6px 14px;border-radius:999px;color:var(--txt);font-weight:600;font-size:12.5px}
-  .author .k{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;
-    color:#04121f;background:linear-gradient(90deg,#ffdf00,#46e0c4)}
+  .author{display:inline-flex;align-items:center;gap:8px;margin-top:8px;text-decoration:none;
+    border:1px solid var(--line);padding:8px 16px;border-radius:999px;color:var(--txt);font-weight:600;font-size:12.5px;
+    background:linear-gradient(90deg,rgba(131,58,180,.25),rgba(193,53,132,.25),rgba(253,29,29,.2));
+    transition:transform .15s, box-shadow .2s, border-color .2s}
+  .author:hover{transform:translateY(-2px);border-color:#c13584;box-shadow:0 10px 26px rgba(193,53,132,.35)}
+  .author .ig{color:#f06}
+  .author b{color:#fff}
+  /* versículo em destaque */
+  .verse{position:relative;max-width:680px;margin:30px auto 6px;padding:26px 26px 22px;
+    background:linear-gradient(160deg,rgba(255,223,0,.07),rgba(0,156,59,.06));
+    border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(10px);
+    box-shadow:0 18px 50px rgba(0,0,0,.32);text-align:center;overflow:hidden}
+  .verse:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:linear-gradient(180deg,#ffdf00,#009c3b,#002776)}
+  .verse .vq{position:absolute;top:-6px;left:18px;font-family:'Bebas Neue';font-size:90px;
+    color:rgba(255,223,0,.18);line-height:1}
+  .verse p{margin:0 0 12px;font-size:16px;line-height:1.7;color:var(--txt);font-style:italic}
+  .verse cite{display:inline-block;font-style:normal;font-weight:700;letter-spacing:.5px;font-size:13px;
+    background:linear-gradient(90deg,#ffdf00,#46e0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
   /* bandeira do Brasil desenhada (renderiza em qualquer aparelho) */
   .brwrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
   .brflag{position:relative;width:62px;height:43px;border-radius:7px;background:#009c3b;overflow:hidden;
@@ -210,8 +225,17 @@
   <p class="hint">⚡ 100% offline — nada sai do seu aparelho, nada é salvo. Funciona no celular e no PC.<br>
   Aceita o texto exato exportado pelo app do álbum (com bandeira, país e página).</p>
 
+  <blockquote class="verse">
+    <span class="vq">“</span>
+    <p>Toda a glória seja a Deus que, por seu grandioso poder que atua em nós, é capaz de realizar infinitamente mais do que poderíamos pedir ou imaginar. A ele seja a glória na igreja e em Cristo Jesus por todas as gerações, para todo o sempre! Amém.”</p>
+    <cite>Efésios 3:20-21 — NVT</cite>
+  </blockquote>
+
   <footer>⚽ <b>Troca de Figurinhas — Copa 2026</b> · ferramenta gratuita pra trocas justas<br>
-    <span class="author"><span class="k">K</span> Criado por Kevin Ferreira</span></footer>
+    <a class="author" href="https://www.instagram.com/kevinklfb" target="_blank" rel="noopener">
+      <svg class="ig" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.86s0 3.6-.07 4.86c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.86.07s-3.6 0-4.86-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.6 2.2 15.2 2.2 12s0-3.6.07-4.86c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.4 2.21 8.8 2.2 12 2.2Zm0 1.8c-3.15 0-3.52.01-4.76.07-.9.04-1.39.2-1.71.32-.43.17-.74.37-1.06.69-.32.32-.52.63-.69 1.06-.12.32-.28.81-.32 1.71C3.4 8.5 3.4 8.85 3.4 12s0 3.5.06 4.74c.04.9.2 1.39.32 1.71.17.43.37.74.69 1.06.32.32.63.52 1.06.69.32.12.81.28 1.71.32 1.24.06 1.61.07 4.76.07s3.52-.01 4.76-.07c.9-.04 1.39-.2 1.71-.32.43-.17.74-.37 1.06-.69.32-.32.52-.63.69-1.06.12-.32.28-.81.32-1.71.06-1.24.07-1.61.07-4.74s0-3.5-.06-4.74c-.04-.9-.2-1.39-.32-1.71a2.85 2.85 0 0 0-.69-1.06 2.85 2.85 0 0 0-1.06-.69c-.32-.12-.81-.28-1.71-.32C15.52 4.01 15.15 4 12 4Zm0 3.06A4.94 4.94 0 1 1 7.06 12 4.94 4.94 0 0 1 12 7.06Zm0 1.8A3.14 3.14 0 1 0 15.14 12 3.14 3.14 0 0 0 12 8.86Zm5.14-3.2a1.15 1.15 0 1 1-1.15 1.15 1.15 1.15 0 0 1 1.15-1.15Z"/></svg>
+      Criado por <b>Kevin Ferreira</b> · @kevinklfb
+    </a></footer>
 </div>
 
 <div class="toast" id="toast"></div>
