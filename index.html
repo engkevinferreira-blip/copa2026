@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Troca de Figurinhas — Copa 2026</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#181b22; --card2:#1f232c; --line:#2a2f3a;
+    --txt:#e8eaed; --mut:#9aa3b2; --acc:#3ea6ff; --ok:#34d399; --give:#fbbf24;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:var(--bg);color:var(--txt);line-height:1.45}
+  header{padding:20px 16px;text-align:center;border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:20px}
+  header p{margin:6px 0 0;color:var(--mut);font-size:13px}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px}
+  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.inputs{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .panel h2{margin:0 0 4px;font-size:15px}
+  .panel small{color:var(--mut);display:block;margin-bottom:10px}
+  label{font-size:12px;color:var(--mut);display:block;margin:8px 0 4px}
+  textarea{width:100%;min-height:120px;background:var(--card2);color:var(--txt);
+    border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;resize:vertical;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  input[type=text]{width:100%;background:var(--card2);color:var(--txt);border:1px solid var(--line);
+    border-radius:8px;padding:8px 10px;font-size:14px}
+  .btnrow{display:flex;gap:10px;justify-content:center;margin:18px 0}
+  button{cursor:pointer;border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600}
+  .go{background:var(--acc);color:#04121f}
+  .clr{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+  .result{margin-top:10px}
+  .score{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  @media(max-width:520px){.score{grid-template-columns:1fr}}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .scard .n{font-size:34px;font-weight:800}
+  .scard .l{color:var(--mut);font-size:13px;margin-top:2px}
+  .pick .n{color:var(--ok)} .give .n{color:var(--give)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.cols{grid-template-columns:1fr}}
+  .col h3{font-size:15px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .pick h3{color:var(--ok)} .give h3{color:var(--give)}
+  .country{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+  .country .ch{font-size:13px;color:var(--mut);margin-bottom:4px}
+  .country .codes{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:13px;font-weight:600;
+    font-family:ui-monospace,Consolas,monospace}
+  .pick .chip{border-color:#1d5e48} .give .chip{border-color:#6b5418}
+  .empty{color:var(--mut);font-size:13px;padding:10px;text-align:center}
+  .copybar{display:flex;gap:8px;margin-top:8px}
+  .copybar button{padding:8px 14px;font-size:13px;background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+  .hint{color:var(--mut);font-size:12px;text-align:center;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔄 Troca de Figurinhas — Copa 2026</h1>
+  <p>Cole as listas exportadas do app (repetidas + faltantes) e veja a troca dos dois lados.</p>
+</header>
+
+<div class="wrap">
+  <div class="inputs">
+    <div class="panel">
+      <h2>👤 Você</h2>
+      <small>Seu nome e suas listas</small>
+      <input type="text" id="meName" placeholder="Seu nome" value="Você">
+      <label>Suas REPETIDAS (o que você tem sobrando)</label>
+      <textarea id="meRep" placeholder="Cole aqui a lista de FIGURINHAS REPETIDAS..."></textarea>
+      <label>Suas FALTANTES (o que você precisa)</label>
+      <textarea id="meFalt" placeholder="Cole aqui a lista de FIGURINHAS FALTANDO..."></textarea>
+    </div>
+    <div class="panel">
+      <h2>🧑 Amigo</h2>
+      <small>Nome do amigo e as listas dele</small>
+      <input type="text" id="frName" placeholder="Nome do amigo" value="Amigo">
+      <label>REPETIDAS dele (o que ele tem sobrando)</label>
+      <textarea id="frRep" placeholder="Cole aqui as REPETIDAS do amigo..."></textarea>
+      <label>FALTANTES dele (o que ele precisa)</label>
+      <textarea id="frFalt" placeholder="Cole aqui as FALTANDO do amigo..."></textarea>
+    </div>
+  </div>
+
+  <div class="btnrow">
+    <button class="go" onclick="run()">Comparar troca</button>
+    <button class="clr" onclick="clearAll()">Limpar</button>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <p class="hint">100% offline. Nada sai do seu aparelho. Funciona no celular e no PC.<br>
+  Aceita o texto exato exportado pelo app da Panini (com bandeira, país e página).</p>
+</div>
+
+<script>
+// --- Parser: lê o texto exportado e devolve {codes:Set, meta:{CODE:{flag,name,page}}} ---
+function parseList(text){
+  const codes = new Set();
+  const meta = {};
+  let cur = {flag:"", name:"", page:""};
+  const lines = text.split(/\r?\n/);
+  // header de país: tem "pg." e um *CODIGO* (ex: 🇲🇽 *MEX* · pg. 8-9)
+  const headerRe = /(\*([A-Z]{2,4})\*|\b([A-Z]{2,4})\b).*pg\.\s*([\d\-]+)/;
+  // código de figurinha: 2-4 letras + numero (MEX11, FWC6, CC13), ou códigos especiais
+  const codeRe = /\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO|FWC\d{1,2})\b/g;
+  for(let raw of lines){
+    const line = raw.trim();
+    if(!line) continue;
+    const h = line.match(headerRe);
+    const isHeader = h && /pg\./.test(line);
+    if(isHeader){
+      const flag = (line.match(/^(\p{Emoji}|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+)/u)||[""])[0];
+      const name = h[2]||h[3]||"";
+      const page = h[4]||"";
+      cur = {flag:flag||"", name, page};
+      continue;
+    }
+    let m;
+    while((m = codeRe.exec(line))!==null){
+      const c = m[1];
+      codes.add(c);
+      if(!meta[c]) meta[c] = {flag:cur.flag, name:cur.name, page:cur.page};
+    }
+  }
+  return {codes, meta};
+}
+
+function intersect(repList, faltList){
+  // o que sai de quem-tem-repetida para quem-falta
+  const out = new Set();
+  for(const c of repList.codes) if(faltList.codes.has(c)) out.add(c);
+  return out;
+}
+
+function groupByCountry(codeSet, metaA, metaB){
+  const groups = {};
+  for(const c of codeSet){
+    const m = metaA[c] || metaB[c] || {flag:"", name:"?", page:""};
+    const key = m.name + "|" + m.flag + "|" + m.page;
+    if(!groups[key]) groups[key] = {flag:m.flag, name:m.name, page:m.page, codes:[]};
+    groups[key].codes.push(c);
+  }
+  // ordena países por página (numérica) e códigos numericamente
+  const arr = Object.values(groups);
+  arr.forEach(g=>g.codes.sort(natSort));
+  arr.sort((a,b)=>{
+    const pa=parseInt(a.page)||999, pb=parseInt(b.page)||999;
+    return pa-pb || a.name.localeCompare(b.name);
+  });
+  return arr;
+}
+function natSort(a,b){
+  const ra=a.match(/^([A-Z]+)(\d*)$/), rb=b.match(/^([A-Z]+)(\d*)$/);
+  if(ra&&rb){ if(ra[1]!==rb[1]) return ra[1].localeCompare(rb[1]);
+    return (parseInt(ra[2])||0)-(parseInt(rb[2])||0); }
+  return a.localeCompare(b);
+}
+
+function renderCol(groups, cls, title){
+  let total = 0; groups.forEach(g=>total+=g.codes.length);
+  let h = `<div class="col ${cls}"><h3>${title} (${total})</h3>`;
+  if(total===0){ h += `<div class="empty">Nada nesse sentido.</div></div>`; return {html:h,flat:[]}; }
+  const flat=[];
+  for(const g of groups){
+    h += `<div class="country"><div class="ch">${g.flag} <b>${g.name}</b>${g.page?` · pg. ${g.page}`:""}</div><div class="codes">`;
+    for(const c of g.codes){ h+=`<span class="chip">${c}</span>`; flat.push(c); }
+    h += `</div></div>`;
+  }
+  h += `</div>`;
+  return {html:h, flat};
+}
+
+let lastPick=[], lastGive=[];
+function run(){
+  const meName = document.getElementById('meName').value.trim()||"Você";
+  const frName = document.getElementById('frName').value.trim()||"Amigo";
+  const meRep = parseList(document.getElementById('meRep').value);
+  const meFalt = parseList(document.getElementById('meFalt').value);
+  const frRep = parseList(document.getElementById('frRep').value);
+  const frFalt = parseList(document.getElementById('frFalt').value);
+
+  // Você pega do amigo = repetidas DELE ∩ suas faltantes
+  const pick = intersect(frRep, meFalt);
+  // Você dá pro amigo = suas repetidas ∩ faltantes DELE
+  const give = intersect(meRep, frFalt);
+
+  const pickG = groupByCountry(pick, frRep.meta, meFalt.meta);
+  const giveG = groupByCountry(give, meRep.meta, frFalt.meta);
+  const pickR = renderCol(pickG, "pick", `⬇️ ${meName} pega de ${frName}`);
+  const giveR = renderCol(giveG, "give", `⬆️ ${meName} dá pra ${frName}`);
+  lastPick = pickR.flat; lastGive = giveR.flat;
+
+  let html = `<div class="score">
+     <div class="scard pick"><div class="n">${pick.size}</div><div class="l">você PEGA</div></div>
+     <div class="scard give"><div class="n">${give.size}</div><div class="l">você DÁ</div></div>
+   </div>
+   <div class="cols">${pickR.html}${giveR.html}</div>
+   <div class="copybar">
+     <button onclick="copyList('pick')">📋 Copiar o que pego</button>
+     <button onclick="copyList('give')">📋 Copiar o que dou</button>
+   </div>`;
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copyList(which){
+  const arr = which==='pick'?lastPick:lastGive;
+  if(!arr.length){ alert('Lista vazia.'); return; }
+  navigator.clipboard.writeText(arr.join(', ')).then(()=>{
+    alert((which==='pick'?'Pego':'Dou')+': '+arr.length+' figurinhas copiadas.');
+  });
+}
+
+function clearAll(){
+  ['meRep','meFalt','frRep','frFalt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('result').innerHTML='';
+}
+</script>
+</body>
+</html>
