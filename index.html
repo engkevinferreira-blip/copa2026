@@ -35,19 +35,23 @@
     font-family:'Poppins',system-ui,sans-serif;color:var(--txt);min-height:100vh;
     background:#06101f;overflow-x:hidden;position:relative;
   }
-  /* fundo animado estilo estádio/Copa */
+  /* fundo animado estilo estádio/Copa (tons Brasil: verde, amarelo, azul) */
   .bg{position:fixed;inset:0;z-index:-3;
     background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,.45), transparent 60%),
-      radial-gradient(1000px 600px at 110% 10%, rgba(0,194,168,.40), transparent 55%),
-      radial-gradient(900px 700px at 50% 120%, rgba(37,99,235,.45), transparent 60%),
-      linear-gradient(160deg,#081325,#0a1f3c 55%,#0b1020);
-    background-size:200% 200%;animation:flow 18s ease-in-out infinite;}
+      radial-gradient(1100px 600px at 12% -12%, rgba(0,156,59,.42), transparent 58%),
+      radial-gradient(1000px 600px at 112% 4%, rgba(255,223,0,.20), transparent 55%),
+      radial-gradient(1000px 700px at 88% 110%, rgba(0,39,118,.55), transparent 60%),
+      radial-gradient(900px 600px at 20% 120%, rgba(0,156,59,.35), transparent 60%),
+      linear-gradient(160deg,#04140a,#06231a 45%,#071427 100%);
+    background-size:200% 200%;animation:flow 20s ease-in-out infinite;}
   @keyframes flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   /* gramado sutil embaixo */
-  .field{position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:-2;opacity:.16;
-    background:repeating-linear-gradient(90deg,#0a3,#0a3 60px,#093 60px,#093 120px);
-    transform:perspective(400px) rotateX(62deg);transform-origin:bottom;}
+  .field{position:fixed;left:0;right:0;bottom:0;height:40vh;z-index:-2;opacity:.18;
+    background:repeating-linear-gradient(90deg,#0a4,#0a4 64px,#083 64px,#083 128px);
+    transform:perspective(420px) rotateX(63deg);transform-origin:bottom;}
+  /* troféu marca d'água */
+  .trophy{position:fixed;right:-40px;top:8%;font-size:340px;z-index:-2;opacity:.05;
+    transform:rotate(12deg);pointer-events:none;filter:drop-shadow(0 0 40px rgba(255,223,0,.4))}
   /* bolinhas/confete flutuando */
   .orb{position:fixed;border-radius:50%;filter:blur(1px);z-index:-1;opacity:.5;animation:rise linear infinite}
   @keyframes rise{0%{transform:translateY(20vh) scale(.6);opacity:0}10%{opacity:.6}100%{transform:translateY(-110vh) scale(1);opacity:0}}
@@ -135,20 +139,38 @@
   .step b{color:var(--txt);font-weight:600}
   .step .sn{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;
     color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
-  footer{text-align:center;color:var(--mut);font-size:12px;padding:8px 0 30px}
+  footer{text-align:center;color:var(--mut);font-size:12px;padding:8px 0 30px;line-height:1.7}
   footer b{color:var(--txt)}
+  .author{display:inline-flex;align-items:center;gap:7px;margin-top:6px;background:var(--glass);
+    border:1px solid var(--line);padding:6px 14px;border-radius:999px;color:var(--txt);font-weight:600;font-size:12.5px}
+  .author .k{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;
+    color:#04121f;background:linear-gradient(90deg,#ffdf00,#46e0c4)}
+  /* bandeira do Brasil desenhada (renderiza em qualquer aparelho) */
+  .brwrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
+  .brflag{position:relative;width:62px;height:43px;border-radius:7px;background:#009c3b;overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,156,59,.4);border:1px solid rgba(255,255,255,.18)}
+  .brflag .dia{position:absolute;left:50%;top:50%;width:31px;height:31px;background:#ffdf00;
+    transform:translate(-50%,-50%) rotate(45deg);border-radius:4px}
+  .brflag .glo{position:absolute;left:50%;top:50%;width:16px;height:16px;border-radius:50%;
+    background:#002776;transform:translate(-50%,-50%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+  .brtxt{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;
+    background:linear-gradient(90deg,#ffdf00,#46e0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
 </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="field"></div>
+<div class="trophy">🏆</div>
 
 <div class="wrap">
   <div class="hero">
     <span class="badge">🏆 FIFA World Cup 2026 · USA · Canadá · México</span>
     <h1><span class="ball">⚽</span> TROCA DE FIGURINHAS</h1>
     <p>Cole as listas exportadas do álbum (repetidas + faltantes) dos dois lados e descubra na hora a troca perfeita — quem dá o quê.</p>
-    <div class="host">🇺🇸 🇨🇦 🇲🇽</div>
+    <div class="brwrap">
+      <div class="brflag" title="Brasil"><span class="dia"></span><span class="glo"></span></div>
+      <span class="brtxt">VAI, BRASIL! 🏆</span>
+    </div>
   </div>
 
   <div class="steps">
@@ -188,20 +210,25 @@
   <p class="hint">⚡ 100% offline — nada sai do seu aparelho, nada é salvo. Funciona no celular e no PC.<br>
   Aceita o texto exato exportado pelo app do álbum (com bandeira, país e página).</p>
 
-  <footer>⚽ <b>Troca de Figurinhas — Copa 2026</b> · ferramenta gratuita pra trocas justas</footer>
+  <footer>⚽ <b>Troca de Figurinhas — Copa 2026</b> · ferramenta gratuita pra trocas justas<br>
+    <span class="author"><span class="k">K</span> Criado por Kevin Ferreira</span></footer>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // confete/orbs flutuando
-(function(){const c=['#00c2a8','#2563eb','#7c3aed','#ffc24b','#ff4d6d','#22e0a1'];
+(function(){const c=['#009c3b','#ffdf00','#002776','#22e0a1','#46e0c4','#ffd400'];
 for(let i=0;i<14;i++){const o=document.createElement('div');o.className='orb';
 const s=6+Math.random()*16;o.style.width=s+'px';o.style.height=s+'px';
 o.style.left=Math.random()*100+'vw';o.style.background=c[i%c.length];
 o.style.animationDuration=(10+Math.random()*14)+'s';o.style.animationDelay=(-Math.random()*16)+'s';
 document.body.appendChild(o);}})();
 
+// Lê 3 formatos de export:
+//  (A) Oficial:  "🇲🇽 *MEX* · pg. 8-9"  +  "MEX11 (x1)"
+//  (B) Digitado: "México:"  +  "MEX11, MEX13"
+//  (C) Moovtech: "RSA: 3(1x), 4(1x), 5(2x)"  -> RSA3, RSA4, RSA5
 function parseList(text){
   const codes=new Set(),meta={};
   let cur={flag:"",name:"",page:""};
@@ -209,35 +236,50 @@ function parseList(text){
   const codeRe=/\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO)\b/g;
   const pageRe=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
   const flagRe=/^\s*((?:[\u{1F1E6}-\u{1F1FF}]{2})|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})/u;
+  // formato C: PREFIXO: numeros...
+  const inlineRe=/^\s*(?:(?:[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})\s*)?\*?([A-Z]{2,4})\*?\s*:\s*(.+)$/u;
+  function add(c){ codes.add(c); if(!meta[c]) meta[c]={flag:cur.flag,name:cur.name,page:cur.page}; }
   for(let raw of lines){
     const line=raw.trim(); if(!line) continue;
+    // (C) prefixo com números na mesma linha
+    const im=line.match(inlineRe);
+    if(im && !/pg\./i.test(line) && /\d/.test(im[2])){
+      const flag=(line.match(flagRe)||[""])[0].trim();
+      cur={flag:flag||"", name:im[1], page:""};
+      im[2].split(/[,;]/).forEach(ch=>{ const nm=ch.match(/(\d{1,2})/); if(nm) add(im[1]+nm[1]); });
+      continue;
+    }
     const pg=line.match(pageRe);
     codeRe.lastIndex=0; const hasCode=codeRe.test(line);
     const isColonHeader=/:\s*$/.test(line) && !hasCode;
-    // cabeçalho de país: linha com "pg. N" OU linha que termina com ":" (formato digitado)
+    // (A)/(B) cabeçalho de país
     if(pg || isColonHeader){
       const flag=(line.match(flagRe)||[""])[0].trim();
-      let name="";
-      const bold=line.match(/\*([^*]+)\*/);
+      let name=""; const bold=line.match(/\*([^*]+)\*/);
       if(bold){ name=bold[1].trim(); }
-      else{
-        name=line.replace(flagRe,"").replace(pageRe,"")
-                 .replace(/[·•|]/g," ").replace(/:\s*$/,"")
-                 .replace(/\s{2,}/g," ").trim();
-      }
+      else{ name=line.replace(flagRe,"").replace(pageRe,"")
+                 .replace(/[·•|]/g," ").replace(/:\s*$/,"").replace(/\s{2,}/g," ").trim(); }
       cur={flag:flag||"", name:name||cur.name, page:pg?pg[1].replace(/\s/g,""):""};
       continue;
     }
+    // (A)/(B) linha de figurinhas
     let m; codeRe.lastIndex=0;
-    while((m=codeRe.exec(line))!==null){const c=m[1];codes.add(c);if(!meta[c])meta[c]={flag:cur.flag,name:cur.name,page:cur.page};}
+    while((m=codeRe.exec(line))!==null) add(m[1]);
   }
   return {codes,meta};
 }
 function intersect(rep,falt){const o=new Set();for(const c of rep.codes)if(falt.codes.has(c))o.add(c);return o;}
 function natSort(a,b){const ra=a.match(/^([A-Z]+)(\d*)$/),rb=b.match(/^([A-Z]+)(\d*)$/);
   if(ra&&rb){if(ra[1]!==rb[1])return ra[1].localeCompare(rb[1]);return (parseInt(ra[2])||0)-(parseInt(rb[2])||0);}return a.localeCompare(b);}
+function pickMeta(a,b){
+  a=a||null;b=b||null;
+  const flag=(a&&a.flag)||(b&&b.flag)||"";
+  const page=(a&&a.page)||(b&&b.page)||"";
+  const name=(a&&a.name)||(b&&b.name)||"?";
+  return {flag,name,page};
+}
 function groupByCountry(set,mA,mB){
-  const g={};for(const c of set){const m=mA[c]||mB[c]||{flag:"",name:"?",page:""};
+  const g={};for(const c of set){const m=pickMeta(mA[c],mB[c]);
     const k=m.name+"|"+m.flag+"|"+m.page;if(!g[k])g[k]={flag:m.flag,name:m.name,page:m.page,codes:[]};g[k].codes.push(c);}
   const a=Object.values(g);a.forEach(x=>x.codes.sort(natSort));
   a.sort((x,y)=>((parseInt(x.page)||999)-(parseInt(y.page)||999))||x.name.localeCompare(y.name));return a;
