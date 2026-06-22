@@ -162,14 +162,15 @@
     background:linear-gradient(90deg,#ffdf00,#46e0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
   /* bandeira do Brasil desenhada (renderiza em qualquer aparelho) */
   .brwrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
-  .brflag{position:relative;width:62px;height:43px;border-radius:7px;background:#009c3b;overflow:hidden;
+  .brflag{width:64px;height:45px;border-radius:7px;display:block;
     box-shadow:0 8px 24px rgba(0,156,59,.4);border:1px solid rgba(255,255,255,.18)}
-  .brflag .dia{position:absolute;left:50%;top:50%;width:31px;height:31px;background:#ffdf00;
-    transform:translate(-50%,-50%) rotate(45deg);border-radius:4px}
-  .brflag .glo{position:absolute;left:50%;top:50%;width:16px;height:16px;border-radius:50%;
-    background:#002776;transform:translate(-50%,-50%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
   .brtxt{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;
-    background:linear-gradient(90deg,#ffdf00,#46e0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
+    background:linear-gradient(90deg,#ffe000,#46e0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .origin{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px;
+    font-size:12.5px;color:var(--mut)}
+  .origin b{color:var(--txt);font-weight:600}
+  .cityflag{height:20px;width:auto;border-radius:3px;border:1px solid rgba(255,255,255,.25);
+    box-shadow:0 3px 10px rgba(0,0,0,.35);background:#fff}
 </style>
 </head>
 <body>
@@ -183,8 +184,24 @@
     <h1><span class="ball">⚽</span> TROCA DE FIGURINHAS</h1>
     <p>Cole as listas exportadas do álbum (repetidas + faltantes) dos dois lados e descubra na hora a troca perfeita — quem dá o quê.</p>
     <div class="brwrap">
-      <div class="brflag" title="Brasil"><span class="dia"></span><span class="glo"></span></div>
+      <svg class="brflag" viewBox="0 0 100 70" role="img" aria-label="Bandeira do Brasil">
+        <defs><clipPath id="globe"><circle cx="50" cy="35" r="14"/></clipPath></defs>
+        <rect width="100" height="70" rx="7" fill="#009c3b"/>
+        <polygon points="50,9 91,35 50,61 9,35" fill="#ffe000"/>
+        <circle cx="50" cy="35" r="14" fill="#002776"/>
+        <path d="M36 39 Q50 30 64 39" fill="none" stroke="#fff" stroke-width="3.2" clip-path="url(#globe)"/>
+        <g fill="#fff">
+          <circle cx="44" cy="30" r="1"/><circle cx="52" cy="29.5" r="1.2"/><circle cx="57" cy="32" r="1"/>
+          <circle cx="47" cy="34" r=".9"/><circle cx="54" cy="36" r="1"/><circle cx="42" cy="37" r=".8"/>
+          <circle cx="50" cy="33" r="1"/>
+        </g>
+      </svg>
       <span class="brtxt">VAI, BRASIL! 🏆</span>
+    </div>
+    <div class="origin">
+      <img class="cityflag" src="flag-rj.svg" alt="Rio de Janeiro" title="Rio de Janeiro" loading="lazy">
+      <img class="cityflag" src="flag-marica.svg" alt="Maricá" title="Maricá" loading="lazy">
+      <span>Feito com ❤️ em <b>Maricá · Rio de Janeiro · Brasil</b></span>
     </div>
   </div>
 
@@ -285,27 +302,29 @@ function parseList(text){
     const pg=line.match(PAGE_RE);
     const core=line.replace(FLAG_RE,"").trim();                 // sem bandeira
     let clean=core.replace(/\([^)]*\)/g," ")                    // tira (1x)/(x2)/(...)
+                  .replace(PAGE_RE," ")                          // tira "pg. N" ANTES (não virar figurinha)
                   .replace(/\b[xX]\s*\d+\b/g," ").replace(/\b\d+\s*[xX]\b/g," ")
                   .replace(/\*/g," ");
-    // 1) Códigos completos em qualquer lugar (CODE + numero, sep opcional)
-    clean.replace(/([A-Z]{2,4})\s*[-–]?\s*0*(\d{1,2})/g,(full,c,n)=>{
-      if(KNOWN.has(c)){ prefix=c; cur={flag:flag||cur.flag,name:c,page:pg?pg[1].replace(/\s/g,""):cur.page};
-        add(c+n,{flag:cur.flag,name:c,page:cur.page}); }
+    // 1) Códigos completos em qualquer lugar (CODE + numero, sep opcional, MAIÚSC/minúsc)
+    clean.replace(/([A-Za-z]{2,4})\s*[-–/]?\s*0*(\d{1,2})/g,(full,c,n)=>{
+      const C=c.toUpperCase();
+      if(KNOWN.has(C)){ prefix=C; cur={flag:flag||cur.flag,name:C,page:pg?pg[1].replace(/\s/g,""):cur.page};
+        add(C+n,{flag:cur.flag,name:C,page:cur.page}); }
       return full;
     });
     // specials avulsos
-    clean.replace(/\b(BRON|PRAT|OURO)\b/g,(f,s)=>{ add(s,{flag:cur.flag,name:cur.name||"Extra",page:pg?pg[1]:cur.page}); return f;});
+    clean.replace(/\b(BRON|PRAT|OURO)\b/gi,(f,s)=>{ add(s.toUpperCase(),{flag:cur.flag,name:cur.name||"Extra",page:pg?pg[1]:cur.page}); return f;});
     // 2) Cabeçalho por CÓDIGO isolado (sem número) ou por NOME -> define prefixo
     let head="";
-    const coreH=core.replace(/^[^A-Za-z]+/,"");                 // tira *,·,etc do início
-    const mc=coreH.match(/^([A-Z]{2,4})\b/);
-    if(mc && KNOWN.has(mc[1])) head=mc[1];
+    const coreH=core.replace(/^[^A-Za-z]+/,"");                 // tira *,·,•,etc do início
+    const mc=coreH.match(/^([A-Za-z]{2,4})\b/);
+    if(mc && KNOWN.has(mc[1].toUpperCase())) head=mc[1].toUpperCase();
     if(!head){ const nm=norm(core.split(/[:(]/)[0]); if(NAME2CODE[nm]) head=NAME2CODE[nm]; }
     if(head){ prefix=head; cur={flag:flag||cur.flag,name:head,page:pg?pg[1].replace(/\s/g,""):(head!==cur.name?"":cur.page)}; }
     // 3) Números soltos -> prefixo + número
     if(prefix){
-      let rest=clean.replace(/[A-Z]{2,4}\s*[-–]?\s*0*\d{1,2}/g," ")  // remove códigos completos já lidos
-                    .replace(/^\s*[A-Z]{2,4}\b/," ").replace(PAGE_RE," ");
+      let rest=clean.replace(/[A-Za-z]{2,4}\s*[-–/]?\s*0*\d{1,2}/g," ")  // remove códigos completos já lidos
+                    .replace(/^\s*[A-Za-z]{2,4}\b/," ");
       let mm; const bn=/\b(\d{1,2})\b/g;
       while((mm=bn.exec(rest))!==null) add(prefix+mm[1],{flag:cur.flag,name:prefix,page:cur.page});
     }
