@@ -3,219 +3,273 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Troca de Figurinhas — Copa 2026</title>
+<meta name="theme-color" content="#0a1f3c">
+<title>⚽ Troca de Figurinhas — Copa 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115; --card:#181b22; --card2:#1f232c; --line:#2a2f3a;
-    --txt:#e8eaed; --mut:#9aa3b2; --acc:#3ea6ff; --ok:#34d399; --give:#fbbf24;
+    --ink:#0a1326; --glass:rgba(255,255,255,.08); --glass2:rgba(255,255,255,.05);
+    --line:rgba(255,255,255,.14); --txt:#f4f7fb; --mut:#aab6cc;
+    --grad1:#00c2a8; --grad2:#2563eb; --grad3:#7c3aed;
+    --pick:#22e0a1; --give:#ffc24b; --acc:#ff4d6d;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    background:var(--bg);color:var(--txt);line-height:1.45}
-  header{padding:20px 16px;text-align:center;border-bottom:1px solid var(--line)}
-  header h1{margin:0;font-size:20px}
-  header p{margin:6px 0 0;color:var(--mut);font-size:13px}
-  .wrap{max-width:1000px;margin:0 auto;padding:16px}
-  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:720px){.inputs{grid-template-columns:1fr}}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-  .panel h2{margin:0 0 4px;font-size:15px}
-  .panel small{color:var(--mut);display:block;margin-bottom:10px}
-  label{font-size:12px;color:var(--mut);display:block;margin:8px 0 4px}
-  textarea{width:100%;min-height:120px;background:var(--card2);color:var(--txt);
-    border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;resize:vertical;
-    font-family:ui-monospace,Menlo,Consolas,monospace}
-  input[type=text]{width:100%;background:var(--card2);color:var(--txt);border:1px solid var(--line);
-    border-radius:8px;padding:8px 10px;font-size:14px}
-  .btnrow{display:flex;gap:10px;justify-content:center;margin:18px 0}
-  button{cursor:pointer;border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600}
-  .go{background:var(--acc);color:#04121f}
-  .clr{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
-  .result{margin-top:10px}
-  .score{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Poppins',system-ui,sans-serif;color:var(--txt);min-height:100vh;
+    background:#06101f;overflow-x:hidden;position:relative;
+  }
+  /* fundo animado estilo estádio/Copa */
+  .bg{position:fixed;inset:0;z-index:-3;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,.45), transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, rgba(0,194,168,.40), transparent 55%),
+      radial-gradient(900px 700px at 50% 120%, rgba(37,99,235,.45), transparent 60%),
+      linear-gradient(160deg,#081325,#0a1f3c 55%,#0b1020);
+    background-size:200% 200%;animation:flow 18s ease-in-out infinite;}
+  @keyframes flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  /* gramado sutil embaixo */
+  .field{position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:-2;opacity:.16;
+    background:repeating-linear-gradient(90deg,#0a3,#0a3 60px,#093 60px,#093 120px);
+    transform:perspective(400px) rotateX(62deg);transform-origin:bottom;}
+  /* bolinhas/confete flutuando */
+  .orb{position:fixed;border-radius:50%;filter:blur(1px);z-index:-1;opacity:.5;animation:rise linear infinite}
+  @keyframes rise{0%{transform:translateY(20vh) scale(.6);opacity:0}10%{opacity:.6}100%{transform:translateY(-110vh) scale(1);opacity:0}}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:18px}
+  /* HERO */
+  .hero{text-align:center;padding:30px 14px 8px;position:relative}
+  .badge{display:inline-flex;gap:8px;align-items:center;background:var(--glass);border:1px solid var(--line);
+    padding:6px 14px;border-radius:999px;font-size:12.5px;letter-spacing:.5px;color:var(--mut);backdrop-filter:blur(8px)}
+  .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,86px);line-height:.95;margin:14px 0 6px;
+    letter-spacing:1px;background:linear-gradient(90deg,#fff,#7df9e0 40%,#9bb8ff 70%,#fff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 8px 40px rgba(0,194,168,.25)}
+  .hero .ball{font-size:clamp(34px,7vw,60px);display:inline-block;animation:spin 7s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero p{color:var(--mut);max-width:560px;margin:6px auto 0;font-size:14.5px}
+  .host{margin-top:12px;font-size:22px;letter-spacing:6px}
+
+  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  @media(max-width:760px){.inputs{grid-template-columns:1fr}}
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:18px;
+    backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.35);transition:transform .25s, box-shadow .25s}
+  .panel:hover{transform:translateY(-3px);box-shadow:0 28px 70px rgba(0,0,0,.45)}
+  .panel.me{border-top:3px solid var(--pick)} .panel.fr{border-top:3px solid var(--give)}
+  .ptitle{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:2px}
+  .ptitle .dot{width:10px;height:10px;border-radius:50%}
+  .me .dot{background:var(--pick);box-shadow:0 0 14px var(--pick)} .fr .dot{background:var(--give);box-shadow:0 0 14px var(--give)}
+  .panel small{color:var(--mut);display:block;margin:2px 0 12px;font-size:12.5px}
+  label{font-size:11.5px;color:var(--mut);display:block;margin:12px 0 5px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  textarea,input[type=text]{width:100%;background:rgba(0,0,0,.28);color:var(--txt);border:1px solid var(--line);
+    border-radius:12px;padding:11px 13px;font-size:13.5px;font-family:inherit;transition:border .2s, box-shadow .2s}
+  textarea{min-height:110px;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+  textarea:focus,input:focus{outline:none;border-color:var(--grad1);box-shadow:0 0 0 3px rgba(0,194,168,.18)}
+
+  .btnrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:26px 0 6px}
+  button{cursor:pointer;border:none;border-radius:14px;font-family:inherit;font-weight:700;font-size:15.5px;
+    padding:14px 30px;transition:transform .15s, filter .2s, box-shadow .2s}
+  button:active{transform:scale(.96)}
+  .go{color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4);box-shadow:0 12px 34px rgba(0,194,168,.4)}
+  .go:hover{filter:brightness(1.07)}
+  .clr{background:var(--glass2);color:var(--txt);border:1px solid var(--line)}
+
+  /* RESULTADO */
+  .result{margin-top:14px}
+  .score{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
   @media(max-width:520px){.score{grid-template-columns:1fr}}
-  .scard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
-  .scard .n{font-size:34px;font-weight:800}
-  .scard .l{color:var(--mut);font-size:13px;margin-top:2px}
-  .pick .n{color:var(--ok)} .give .n{color:var(--give)}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:720px){.cols{grid-template-columns:1fr}}
-  .col h3{font-size:15px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-  .pick h3{color:var(--ok)} .give h3{color:var(--give)}
-  .country{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
-  .country .ch{font-size:13px;color:var(--mut);margin-bottom:4px}
-  .country .codes{display:flex;flex-wrap:wrap;gap:6px}
-  .chip{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:13px;font-weight:600;
-    font-family:ui-monospace,Consolas,monospace}
-  .pick .chip{border-color:#1d5e48} .give .chip{border-color:#6b5418}
-  .empty{color:var(--mut);font-size:13px;padding:10px;text-align:center}
-  .copybar{display:flex;gap:8px;margin-top:8px}
-  .copybar button{padding:8px 14px;font-size:13px;background:var(--card2);color:var(--txt);border:1px solid var(--line)}
-  .hint{color:var(--mut);font-size:12px;text-align:center;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+  .scard{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center;
+    background:var(--glass);backdrop-filter:blur(12px);animation:pop .5s cubic-bezier(.2,.9,.3,1.3) both}
+  .scard .n{font-family:'Bebas Neue';font-size:58px;line-height:1}
+  .scard .l{color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  .scard.pick .n{color:var(--pick);text-shadow:0 0 30px rgba(34,224,161,.5)}
+  .scard.give .n{color:var(--give);text-shadow:0 0 30px rgba(255,194,75,.5)}
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .col{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:16px;backdrop-filter:blur(12px)}
+  .col h3{font-size:15.5px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .col.pick h3{color:var(--pick)} .col.give h3{color:var(--give)}
+  .country{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:9px;
+    animation:slidein .45s ease both}
+  @keyframes slidein{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+  .country .ch{font-size:12.5px;color:var(--mut);margin-bottom:7px;font-weight:600}
+  .country .codes{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:8px;padding:4px 11px;font-size:13px;font-weight:700;
+    font-family:ui-monospace,Consolas,monospace;transition:transform .12s}
+  .chip:hover{transform:translateY(-2px)}
+  .col.pick .chip{border-color:rgba(34,224,161,.45);color:#bafce5}
+  .col.give .chip{border-color:rgba(255,194,75,.45);color:#ffe4ab}
+  .empty{color:var(--mut);font-size:13px;padding:14px;text-align:center}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;justify-content:center}
+  .actions button{font-size:13.5px;padding:11px 18px}
+  .copy{background:var(--glass2);color:var(--txt);border:1px solid var(--line)}
+  .wa{background:linear-gradient(90deg,#25D366,#1ebe5d);color:#04220f;box-shadow:0 10px 28px rgba(37,211,102,.35)}
+
+  .hint{color:var(--mut);font-size:12px;text-align:center;margin:34px auto 20px;max-width:620px;
+    border-top:1px solid var(--line);padding-top:18px;line-height:1.6}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(40px);background:#0f2238;
+    border:1px solid var(--line);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;
+    opacity:0;pointer-events:none;transition:.3s;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<header>
-  <h1>🔄 Troca de Figurinhas — Copa 2026</h1>
-  <p>Cole as listas exportadas do app (repetidas + faltantes) e veja a troca dos dois lados.</p>
-</header>
+<div class="bg"></div>
+<div class="field"></div>
 
 <div class="wrap">
+  <div class="hero">
+    <span class="badge">🏆 FIFA World Cup 2026 · USA · Canadá · México</span>
+    <h1><span class="ball">⚽</span> TROCA DE FIGURINHAS</h1>
+    <p>Cole as listas exportadas do álbum (repetidas + faltantes) dos dois lados e descubra na hora a troca perfeita — quem dá o quê.</p>
+    <div class="host">🇺🇸 🇨🇦 🇲🇽</div>
+  </div>
+
   <div class="inputs">
-    <div class="panel">
-      <h2>👤 Você</h2>
+    <div class="panel me">
+      <div class="ptitle"><span class="dot"></span>👤 Você</div>
       <small>Seu nome e suas listas</small>
       <input type="text" id="meName" placeholder="Seu nome" value="Você">
-      <label>Suas REPETIDAS (o que você tem sobrando)</label>
-      <textarea id="meRep" placeholder="Cole aqui a lista de FIGURINHAS REPETIDAS..."></textarea>
-      <label>Suas FALTANTES (o que você precisa)</label>
-      <textarea id="meFalt" placeholder="Cole aqui a lista de FIGURINHAS FALTANDO..."></textarea>
+      <label>Suas repetidas (o que tem sobrando)</label>
+      <textarea id="meRep" placeholder="Cole aqui suas FIGURINHAS REPETIDAS..."></textarea>
+      <label>Suas faltantes (o que precisa)</label>
+      <textarea id="meFalt" placeholder="Cole aqui suas FIGURINHAS FALTANDO..."></textarea>
     </div>
-    <div class="panel">
-      <h2>🧑 Amigo</h2>
+    <div class="panel fr">
+      <div class="ptitle"><span class="dot"></span>🧑 Amigo</div>
       <small>Nome do amigo e as listas dele</small>
       <input type="text" id="frName" placeholder="Nome do amigo" value="Amigo">
-      <label>REPETIDAS dele (o que ele tem sobrando)</label>
+      <label>Repetidas dele (o que ele tem sobrando)</label>
       <textarea id="frRep" placeholder="Cole aqui as REPETIDAS do amigo..."></textarea>
-      <label>FALTANTES dele (o que ele precisa)</label>
+      <label>Faltantes dele (o que ele precisa)</label>
       <textarea id="frFalt" placeholder="Cole aqui as FALTANDO do amigo..."></textarea>
     </div>
   </div>
 
   <div class="btnrow">
-    <button class="go" onclick="run()">Comparar troca</button>
+    <button class="go" onclick="run()">⚡ Comparar troca</button>
     <button class="clr" onclick="clearAll()">Limpar</button>
   </div>
 
   <div class="result" id="result"></div>
 
-  <p class="hint">100% offline. Nada sai do seu aparelho. Funciona no celular e no PC.<br>
-  Aceita o texto exato exportado pelo app da Panini (com bandeira, país e página).</p>
+  <p class="hint">⚡ 100% offline — nada sai do seu aparelho, nada é salvo. Funciona no celular e no PC.<br>
+  Aceita o texto exato exportado pelo app do álbum (com bandeira, país e página).</p>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-// --- Parser: lê o texto exportado e devolve {codes:Set, meta:{CODE:{flag,name,page}}} ---
+// confete/orbs flutuando
+(function(){const c=['#00c2a8','#2563eb','#7c3aed','#ffc24b','#ff4d6d','#22e0a1'];
+for(let i=0;i<14;i++){const o=document.createElement('div');o.className='orb';
+const s=6+Math.random()*16;o.style.width=s+'px';o.style.height=s+'px';
+o.style.left=Math.random()*100+'vw';o.style.background=c[i%c.length];
+o.style.animationDuration=(10+Math.random()*14)+'s';o.style.animationDelay=(-Math.random()*16)+'s';
+document.body.appendChild(o);}})();
+
 function parseList(text){
-  const codes = new Set();
-  const meta = {};
-  let cur = {flag:"", name:"", page:""};
-  const lines = text.split(/\r?\n/);
-  // header de país: tem "pg." e um *CODIGO* (ex: 🇲🇽 *MEX* · pg. 8-9)
-  const headerRe = /(\*([A-Z]{2,4})\*|\b([A-Z]{2,4})\b).*pg\.\s*([\d\-]+)/;
-  // código de figurinha: 2-4 letras + numero (MEX11, FWC6, CC13), ou códigos especiais
-  const codeRe = /\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO|FWC\d{1,2})\b/g;
+  const codes=new Set(),meta={};
+  let cur={flag:"",name:"",page:""};
+  const lines=(text||"").split(/\r?\n/);
+  const headerRe=/(\*([A-Z]{2,4})\*|\b([A-Z]{2,4})\b).*pg\.\s*([\d\-]+)/;
+  const codeRe=/\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO|FWC\d{1,2})\b/g;
   for(let raw of lines){
-    const line = raw.trim();
-    if(!line) continue;
-    const h = line.match(headerRe);
-    const isHeader = h && /pg\./.test(line);
-    if(isHeader){
-      const flag = (line.match(/^(\p{Emoji}|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+)/u)||[""])[0];
-      const name = h[2]||h[3]||"";
-      const page = h[4]||"";
-      cur = {flag:flag||"", name, page};
-      continue;
+    const line=raw.trim(); if(!line) continue;
+    const h=line.match(headerRe);
+    if(h&&/pg\./.test(line)){
+      const flag=(line.match(/^(\p{Emoji}|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+)/u)||[""])[0];
+      cur={flag:flag||"",name:h[2]||h[3]||"",page:h[4]||""};continue;
     }
-    let m;
-    while((m = codeRe.exec(line))!==null){
-      const c = m[1];
-      codes.add(c);
-      if(!meta[c]) meta[c] = {flag:cur.flag, name:cur.name, page:cur.page};
-    }
+    let m; while((m=codeRe.exec(line))!==null){const c=m[1];codes.add(c);if(!meta[c])meta[c]={flag:cur.flag,name:cur.name,page:cur.page};}
   }
-  return {codes, meta};
+  return {codes,meta};
 }
-
-function intersect(repList, faltList){
-  // o que sai de quem-tem-repetida para quem-falta
-  const out = new Set();
-  for(const c of repList.codes) if(faltList.codes.has(c)) out.add(c);
-  return out;
+function intersect(rep,falt){const o=new Set();for(const c of rep.codes)if(falt.codes.has(c))o.add(c);return o;}
+function natSort(a,b){const ra=a.match(/^([A-Z]+)(\d*)$/),rb=b.match(/^([A-Z]+)(\d*)$/);
+  if(ra&&rb){if(ra[1]!==rb[1])return ra[1].localeCompare(rb[1]);return (parseInt(ra[2])||0)-(parseInt(rb[2])||0);}return a.localeCompare(b);}
+function groupByCountry(set,mA,mB){
+  const g={};for(const c of set){const m=mA[c]||mB[c]||{flag:"",name:"?",page:""};
+    const k=m.name+"|"+m.flag+"|"+m.page;if(!g[k])g[k]={flag:m.flag,name:m.name,page:m.page,codes:[]};g[k].codes.push(c);}
+  const a=Object.values(g);a.forEach(x=>x.codes.sort(natSort));
+  a.sort((x,y)=>((parseInt(x.page)||999)-(parseInt(y.page)||999))||x.name.localeCompare(y.name));return a;
 }
-
-function groupByCountry(codeSet, metaA, metaB){
-  const groups = {};
-  for(const c of codeSet){
-    const m = metaA[c] || metaB[c] || {flag:"", name:"?", page:""};
-    const key = m.name + "|" + m.flag + "|" + m.page;
-    if(!groups[key]) groups[key] = {flag:m.flag, name:m.name, page:m.page, codes:[]};
-    groups[key].codes.push(c);
-  }
-  // ordena países por página (numérica) e códigos numericamente
-  const arr = Object.values(groups);
-  arr.forEach(g=>g.codes.sort(natSort));
-  arr.sort((a,b)=>{
-    const pa=parseInt(a.page)||999, pb=parseInt(b.page)||999;
-    return pa-pb || a.name.localeCompare(b.name);
-  });
-  return arr;
-}
-function natSort(a,b){
-  const ra=a.match(/^([A-Z]+)(\d*)$/), rb=b.match(/^([A-Z]+)(\d*)$/);
-  if(ra&&rb){ if(ra[1]!==rb[1]) return ra[1].localeCompare(rb[1]);
-    return (parseInt(ra[2])||0)-(parseInt(rb[2])||0); }
-  return a.localeCompare(b);
-}
-
-function renderCol(groups, cls, title){
-  let total = 0; groups.forEach(g=>total+=g.codes.length);
-  let h = `<div class="col ${cls}"><h3>${title} (${total})</h3>`;
-  if(total===0){ h += `<div class="empty">Nada nesse sentido.</div></div>`; return {html:h,flat:[]}; }
-  const flat=[];
+function renderCol(groups,cls,title){
+  let total=0;groups.forEach(g=>total+=g.codes.length);
+  let h=`<div class="col ${cls}"><h3>${title} <span style="margin-left:auto;font-weight:800">${total}</span></h3>`;
+  if(total===0){h+=`<div class="empty">Nada nesse sentido 🤷</div></div>`;return {html:h,flat:[],groups:[]};}
+  const flat=[];let i=0;
   for(const g of groups){
-    h += `<div class="country"><div class="ch">${g.flag} <b>${g.name}</b>${g.page?` · pg. ${g.page}`:""}</div><div class="codes">`;
-    for(const c of g.codes){ h+=`<span class="chip">${c}</span>`; flat.push(c); }
-    h += `</div></div>`;
+    h+=`<div class="country" style="animation-delay:${(i++)*.05}s"><div class="ch">${g.flag} <b>${g.name}</b>${g.page?` · pg. ${g.page}`:""}</div><div class="codes">`;
+    for(const c of g.codes){h+=`<span class="chip">${c}</span>`;flat.push(c);}
+    h+=`</div></div>`;
   }
-  h += `</div>`;
-  return {html:h, flat};
+  h+=`</div>`;return {html:h,flat,groups};
+}
+function fmtGroups(groups){
+  return groups.map(g=>`${g.flag} ${g.name} (pg. ${g.page}): ${g.codes.join(', ')}`).join('\n');
 }
 
-let lastPick=[], lastGive=[];
+let last={pick:[],give:[],pickG:[],giveG:[],meName:'Você',frName:'Amigo'};
 function run(){
-  const meName = document.getElementById('meName').value.trim()||"Você";
-  const frName = document.getElementById('frName').value.trim()||"Amigo";
-  const meRep = parseList(document.getElementById('meRep').value);
-  const meFalt = parseList(document.getElementById('meFalt').value);
-  const frRep = parseList(document.getElementById('frRep').value);
-  const frFalt = parseList(document.getElementById('frFalt').value);
+  const meName=document.getElementById('meName').value.trim()||"Você";
+  const frName=document.getElementById('frName').value.trim()||"Amigo";
+  const meRep=parseList(document.getElementById('meRep').value);
+  const meFalt=parseList(document.getElementById('meFalt').value);
+  const frRep=parseList(document.getElementById('frRep').value);
+  const frFalt=parseList(document.getElementById('frFalt').value);
+  const pick=intersect(frRep,meFalt);
+  const give=intersect(meRep,frFalt);
+  const pickG=groupByCountry(pick,frRep.meta,meFalt.meta);
+  const giveG=groupByCountry(give,meRep.meta,frFalt.meta);
+  const pR=renderCol(pickG,"pick",`⬇️ ${meName} pega de ${frName}`);
+  const gR=renderCol(giveG,"give",`⬆️ ${meName} dá pra ${frName}`);
+  last={pick:pR.flat,give:gR.flat,pickG,giveG,meName,frName};
 
-  // Você pega do amigo = repetidas DELE ∩ suas faltantes
-  const pick = intersect(frRep, meFalt);
-  // Você dá pro amigo = suas repetidas ∩ faltantes DELE
-  const give = intersect(meRep, frFalt);
-
-  const pickG = groupByCountry(pick, frRep.meta, meFalt.meta);
-  const giveG = groupByCountry(give, meRep.meta, frFalt.meta);
-  const pickR = renderCol(pickG, "pick", `⬇️ ${meName} pega de ${frName}`);
-  const giveR = renderCol(giveG, "give", `⬆️ ${meName} dá pra ${frName}`);
-  lastPick = pickR.flat; lastGive = giveR.flat;
-
-  let html = `<div class="score">
-     <div class="scard pick"><div class="n">${pick.size}</div><div class="l">você PEGA</div></div>
-     <div class="scard give"><div class="n">${give.size}</div><div class="l">você DÁ</div></div>
+  if(meRep.codes.size+meFalt.codes.size+frRep.codes.size+frFalt.codes.size===0){
+    toast('Cole as listas primeiro 😉');return;
+  }
+  let html=`<div class="score">
+     <div class="scard pick"><div class="n">${pick.size}</div><div class="l">Você pega</div></div>
+     <div class="scard give"><div class="n">${give.size}</div><div class="l">Você dá</div></div>
    </div>
-   <div class="cols">${pickR.html}${giveR.html}</div>
-   <div class="copybar">
-     <button onclick="copyList('pick')">📋 Copiar o que pego</button>
-     <button onclick="copyList('give')">📋 Copiar o que dou</button>
+   <div class="cols">${pR.html}${gR.html}</div>
+   <div class="actions">
+     <button class="wa" onclick="shareWA()">💬 Compartilhar no WhatsApp</button>
+     <button class="copy" onclick="copyList('pick')">📋 Copiar o que pego</button>
+     <button class="copy" onclick="copyList('give')">📋 Copiar o que dou</button>
    </div>`;
-  document.getElementById('result').innerHTML = html;
+  document.getElementById('result').innerHTML=html;
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function copyList(which){
-  const arr = which==='pick'?lastPick:lastGive;
-  if(!arr.length){ alert('Lista vazia.'); return; }
-  navigator.clipboard.writeText(arr.join(', ')).then(()=>{
-    alert((which==='pick'?'Pego':'Dou')+': '+arr.length+' figurinhas copiadas.');
-  });
+function buildMsg(){
+  const L=last;
+  let m=`🏆 *Troca de Figurinhas — Copa 2026*\n\n`;
+  m+=`⬇️ *${L.meName} pega de ${L.frName}* (${L.pick.length})\n`;
+  m+= L.pickG.length?fmtGroups(L.pickG):'— nada —';
+  m+=`\n\n⬆️ *${L.meName} dá pra ${L.frName}* (${L.give.length})\n`;
+  m+= L.giveG.length?fmtGroups(L.giveG):'— nada —';
+  m+=`\n\nFeito em: ${location.href}`;
+  return m;
 }
+function shareWA(){
+  const msg=buildMsg();
+  if(navigator.share){navigator.share({text:msg}).catch(()=>openWA(msg));}
+  else openWA(msg);
+}
+function openWA(msg){window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
 
-function clearAll(){
-  ['meRep','meFalt','frRep','frFalt'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('result').innerHTML='';
+function copyList(which){
+  const arr=which==='pick'?last.pick:last.give;
+  if(!arr.length){toast('Lista vazia');return;}
+  navigator.clipboard.writeText(arr.join(', ')).then(()=>toast((which==='pick'?'Pego':'Dou')+': '+arr.length+' copiadas ✅'));
 }
+function clearAll(){['meRep','meFalt','frRep','frFalt'].forEach(id=>document.getElementById(id).value='');document.getElementById('result').innerHTML='';}
+let tT;function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('on'),2200);}
 </script>
 </body>
 </html>
