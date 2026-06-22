@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a1f3c">
 <title>⚽ Troca de Figurinhas — Copa 2026</title>
+<meta name="description" content="Cole as listas de figurinhas repetidas e faltantes dos dois lados e descubra na hora a troca perfeita da Copa 2026 — quem dá o quê, por país e página.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<!-- Link preview (WhatsApp/grupos) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Troca de Figurinhas — Copa 2026">
+<meta property="og:description" content="Cole as listas dos dois lados e descubra a troca perfeita na hora — quem dá o quê, por país e página.">
+<meta property="og:image" content="https://engkevinferreira-blip.github.io/copa2026/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://engkevinferreira-blip.github.io/copa2026/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Troca de Figurinhas — Copa 2026">
+<meta name="twitter:description" content="Descubra a troca perfeita na hora — quem dá o quê.">
+<meta name="twitter:image" content="https://engkevinferreira-blip.github.io/copa2026/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -114,6 +128,15 @@
     border:1px solid var(--line);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;
     opacity:0;pointer-events:none;transition:.3s;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.5)}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{display:flex;align-items:center;gap:10px;background:var(--glass2);border:1px solid var(--line);
+    border-radius:14px;padding:12px 14px;font-size:13px;color:var(--mut);backdrop-filter:blur(8px)}
+  .step b{color:var(--txt);font-weight:600}
+  .step .sn{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;
+    color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
+  footer{text-align:center;color:var(--mut);font-size:12px;padding:8px 0 30px}
+  footer b{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -126,6 +149,12 @@
     <h1><span class="ball">⚽</span> TROCA DE FIGURINHAS</h1>
     <p>Cole as listas exportadas do álbum (repetidas + faltantes) dos dois lados e descubra na hora a troca perfeita — quem dá o quê.</p>
     <div class="host">🇺🇸 🇨🇦 🇲🇽</div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><span class="sn">1</span> No app do álbum, exporte/compartilhe suas listas de <b>repetidas</b> e <b>faltantes</b>.</div>
+    <div class="step"><span class="sn">2</span> Cole as suas de um lado e as do amigo do outro.</div>
+    <div class="step"><span class="sn">3</span> Toque em <b>Comparar</b> e mande o resultado no <b>WhatsApp</b>.</div>
   </div>
 
   <div class="inputs">
@@ -158,6 +187,8 @@
 
   <p class="hint">⚡ 100% offline — nada sai do seu aparelho, nada é salvo. Funciona no celular e no PC.<br>
   Aceita o texto exato exportado pelo app do álbum (com bandeira, país e página).</p>
+
+  <footer>⚽ <b>Troca de Figurinhas — Copa 2026</b> · ferramenta gratuita pra trocas justas</footer>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -175,16 +206,30 @@ function parseList(text){
   const codes=new Set(),meta={};
   let cur={flag:"",name:"",page:""};
   const lines=(text||"").split(/\r?\n/);
-  const headerRe=/(\*([A-Z]{2,4})\*|\b([A-Z]{2,4})\b).*pg\.\s*([\d\-]+)/;
-  const codeRe=/\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO|FWC\d{1,2})\b/g;
+  const codeRe=/\b([A-Z]{2,4}\d{1,2}|CC\d{1,2}|BRON|PRAT|OURO)\b/g;
+  const pageRe=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
+  const flagRe=/^\s*((?:[\u{1F1E6}-\u{1F1FF}]{2})|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})/u;
   for(let raw of lines){
     const line=raw.trim(); if(!line) continue;
-    const h=line.match(headerRe);
-    if(h&&/pg\./.test(line)){
-      const flag=(line.match(/^(\p{Emoji}|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]{2}|🏴[\u{E0000}-\u{E007F}]+)/u)||[""])[0];
-      cur={flag:flag||"",name:h[2]||h[3]||"",page:h[4]||""};continue;
+    const pg=line.match(pageRe);
+    codeRe.lastIndex=0; const hasCode=codeRe.test(line);
+    const isColonHeader=/:\s*$/.test(line) && !hasCode;
+    // cabeçalho de país: linha com "pg. N" OU linha que termina com ":" (formato digitado)
+    if(pg || isColonHeader){
+      const flag=(line.match(flagRe)||[""])[0].trim();
+      let name="";
+      const bold=line.match(/\*([^*]+)\*/);
+      if(bold){ name=bold[1].trim(); }
+      else{
+        name=line.replace(flagRe,"").replace(pageRe,"")
+                 .replace(/[·•|]/g," ").replace(/:\s*$/,"")
+                 .replace(/\s{2,}/g," ").trim();
+      }
+      cur={flag:flag||"", name:name||cur.name, page:pg?pg[1].replace(/\s/g,""):""};
+      continue;
     }
-    let m; while((m=codeRe.exec(line))!==null){const c=m[1];codes.add(c);if(!meta[c])meta[c]={flag:cur.flag,name:cur.name,page:cur.page};}
+    let m; codeRe.lastIndex=0;
+    while((m=codeRe.exec(line))!==null){const c=m[1];codes.add(c);if(!meta[c])meta[c]={flag:cur.flag,name:cur.name,page:cur.page};}
   }
   return {codes,meta};
 }
