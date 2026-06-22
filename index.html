@@ -349,16 +349,33 @@ function parseList(text){
 function intersect(rep,falt){const o=new Set();for(const c of rep.codes)if(falt.codes.has(c))o.add(c);return o;}
 function natSort(a,b){const ra=a.match(/^([A-Z]+)(\d*)$/),rb=b.match(/^([A-Z]+)(\d*)$/);
   if(ra&&rb){if(ra[1]!==rb[1])return ra[1].localeCompare(rb[1]);return (parseInt(ra[2])||0)-(parseInt(rb[2])||0);}return a.localeCompare(b);}
-function pickMeta(a,b){
-  a=a||null;b=b||null;
-  const flag=(a&&a.flag)||(b&&b.flag)||"";
-  const page=(a&&a.page)||(b&&b.page)||"";
-  const name=(a&&a.name)||(b&&b.name)||"?";
-  return {flag,name,page};
+// Tabela oficial do álbum: código do país -> bandeira + página (sempre exibe, em qualquer formato)
+const ALBUM={
+  MEX:{f:"🇲🇽",p:"8-9"},RSA:{f:"🇿🇦",p:"10-11"},KOR:{f:"🇰🇷",p:"12-13"},CZE:{f:"🇨🇿",p:"14-15"},
+  CAN:{f:"🇨🇦",p:"16-17"},BIH:{f:"🇧🇦",p:"18-19"},QAT:{f:"🇶🇦",p:"20-21"},SUI:{f:"🇨🇭",p:"22-23"},
+  BRA:{f:"🇧🇷",p:"24-25"},MAR:{f:"🇲🇦",p:"26-27"},HAI:{f:"🇭🇹",p:"28-29"},SCO:{f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",p:"30-31"},
+  USA:{f:"🇺🇸",p:"32-33"},PAR:{f:"🇵🇾",p:"34-35"},AUS:{f:"🇦🇺",p:"36-37"},TUR:{f:"🇹🇷",p:"38-39"},
+  GER:{f:"🇩🇪",p:"40-41"},CUW:{f:"🇨🇼",p:"42-43"},CIV:{f:"🇨🇮",p:"44-45"},ECU:{f:"🇪🇨",p:"46-47"},
+  NED:{f:"🇳🇱",p:"48-49"},JPN:{f:"🇯🇵",p:"50-51"},SWE:{f:"🇸🇪",p:"52-53"},TUN:{f:"🇹🇳",p:"54-55"},
+  BEL:{f:"🇧🇪",p:"58-59"},EGY:{f:"🇪🇬",p:"60-61"},IRN:{f:"🇮🇷",p:"62-63"},NZL:{f:"🇳🇿",p:"64-65"},
+  ESP:{f:"🇪🇸",p:"66-67"},CPV:{f:"🇨🇻",p:"68-69"},KSA:{f:"🇸🇦",p:"70-71"},URU:{f:"🇺🇾",p:"72-73"},
+  FRA:{f:"🇫🇷",p:"74-75"},SEN:{f:"🇸🇳",p:"76-77"},IRQ:{f:"🇮🇶",p:"78-79"},NOR:{f:"🇳🇴",p:"80-81"},
+  ARG:{f:"🇦🇷",p:"82-83"},ALG:{f:"🇩🇿",p:"84-85"},AUT:{f:"🇦🇹",p:"86-87"},JOR:{f:"🇯🇴",p:"88-89"},
+  POR:{f:"🇵🇹",p:"90-91"},COD:{f:"🇨🇩",p:"92-93"},UZB:{f:"🇺🇿",p:"94-95"},COL:{f:"🇨🇴",p:"96-97"},
+  ENG:{f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",p:"98-99"},CRO:{f:"🇭🇷",p:"100-101"},GHA:{f:"🇬🇭",p:"102-103"},PAN:{f:"🇵🇦",p:"104-105"},
+  CC:{f:"🥤",p:"111"}
+};
+function countryOf(code){ return /^(BRON|PRAT|OURO)$/.test(code)?code:code.replace(/\d+$/,""); }
+function albumMeta(code){
+  if(/^(BRON|PRAT|OURO)$/.test(code)) return {flag:"🏅",name:"Extra",page:"110"};
+  const cc=countryOf(code);
+  if(cc==="FWC"){ const n=parseInt(code.slice(3))||0; return {flag:"🏆",name:"FWC",page:n>=9?"106-109":"2-3"}; }
+  const a=ALBUM[cc];
+  return a?{flag:a.f,name:cc,page:a.p}:{flag:"",name:cc,page:""};
 }
-function groupByCountry(set,mA,mB){
-  const g={};for(const c of set){const m=pickMeta(mA[c],mB[c]);
-    const k=m.name+"|"+m.flag+"|"+m.page;if(!g[k])g[k]={flag:m.flag,name:m.name,page:m.page,codes:[]};g[k].codes.push(c);}
+function groupByCountry(set){
+  const g={};for(const c of set){const m=albumMeta(c);
+    const k=m.name+"|"+m.page;if(!g[k])g[k]={flag:m.flag,name:m.name,page:m.page,codes:[]};g[k].codes.push(c);}
   const a=Object.values(g);a.forEach(x=>x.codes.sort(natSort));
   a.sort((x,y)=>((parseInt(x.page)||999)-(parseInt(y.page)||999))||x.name.localeCompare(y.name));return a;
 }
@@ -389,8 +406,8 @@ function run(){
   const frFalt=parseList(document.getElementById('frFalt').value);
   const pick=intersect(frRep,meFalt);
   const give=intersect(meRep,frFalt);
-  const pickG=groupByCountry(pick,frRep.meta,meFalt.meta);
-  const giveG=groupByCountry(give,meRep.meta,frFalt.meta);
+  const pickG=groupByCountry(pick);
+  const giveG=groupByCountry(give);
   const pR=renderCol(pickG,"pick",`⬇️ ${meName} pega de ${frName}`);
   const gR=renderCol(giveG,"give",`⬆️ ${meName} dá pra ${frName}`);
   last={pick:pR.flat,give:gR.flat,pickG,giveG,meName,frName};
@@ -419,7 +436,10 @@ function buildMsg(){
   m+= L.pickG.length?fmtGroups(L.pickG):'— nada —';
   m+=`\n\n⬆️ *${L.meName} dá pra ${L.frName}* (${L.give.length})\n`;
   m+= L.giveG.length?fmtGroups(L.giveG):'— nada —';
-  m+=`\n\nFeito em: ${location.href}`;
+  m+=`\n\n🔗 ${location.href}`;
+  m+=`\n👤 Criador: Kevin Ferreira`;
+  m+=`\n📸 Instagram: https://instagram.com/kevinklfb`;
+  m+=`\n\nJESUS TE AMA ✊`;
   return m;
 }
 function shareWA(){
