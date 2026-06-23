@@ -467,11 +467,10 @@ function run(){
 function buildMsg(){
   const L=last;
   let m=`🏆 *Troca de Figurinhas — Copa 2026*\n\n`;
-  m+=`⬇️ *${L.meName} pega de ${L.frName}* (${L.pick.length})\n`;
+  m+=`⬇️ *${L.meName} RECEBE de ${L.frName}* (${L.pick.length})\n`;
   m+= L.pickG.length?fmtGroups(L.pickG):'— nada —';
-  m+=`\n\n⬆️ *${L.meName} dá pra ${L.frName}* (${L.give.length})\n`;
+  m+=`\n\n⬆️ *${L.meName} ENVIA para ${L.frName}* (${L.give.length})\n`;
   m+= L.giveG.length?fmtGroups(L.giveG):'— nada —';
-  m+=`\n\n🔗 ${location.href}`;
   m+=`\n👤 Criador: Kevin Ferreira`;
   m+=`\n📸 Instagram: https://instagram.com/kevinklfb`;
   m+=`\n\nJESUS TE AMA 🙏`;
