@@ -443,16 +443,16 @@ function run(){
   const give=intersect(meRep,frFalt);
   const pickG=groupByCountry(pick);
   const giveG=groupByCountry(give);
-  const pR=renderCol(pickG,"pick",`⬇️ ${meName} pega de ${frName}`);
-  const gR=renderCol(giveG,"give",`⬆️ ${meName} dá pra ${frName}`);
+  const pR=renderCol(pickG,"pick",`⬇️ ${meName} RECEBE de ${frName}`);
+  const gR=renderCol(giveG,"give",`⬆️ ${meName} ENVIA para ${frName}`);
   last={pick:pR.flat,give:gR.flat,pickG,giveG,meName,frName};
 
   if(meRep.codes.size+meFalt.codes.size+frRep.codes.size+frFalt.codes.size===0){
     toast('Cole as listas primeiro 😉');return;
   }
   let html=`<div class="score">
-     <div class="scard pick"><div class="n">${pick.size}</div><div class="l">Você pega</div></div>
-     <div class="scard give"><div class="n">${give.size}</div><div class="l">Você dá</div></div>
+     <div class="scard pick"><div class="n">${pick.size}</div><div class="l">Você recebe</div></div>
+     <div class="scard give"><div class="n">${give.size}</div><div class="l">Você envia</div></div>
    </div>
    <div class="cols">${pR.html}${gR.html}</div>
    <div class="actions">
