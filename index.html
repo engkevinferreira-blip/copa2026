@@ -152,6 +152,21 @@
   .step b{color:var(--txt);font-weight:600}
   .step .sn{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;
     color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
+  /* conferencia do que foi lido */
+  .conf{max-width:760px;margin:16px auto 0;background:var(--glass2);border:1px solid var(--line);
+    border-radius:16px;padding:4px 16px;backdrop-filter:blur(10px)}
+  .conf summary{cursor:pointer;padding:12px 2px;font-weight:700;font-size:14px;list-style:none;user-select:none}
+  .conf summary::-webkit-details-marker{display:none}
+  .conf summary::before{content:"▸ ";color:var(--mut)}
+  .conf[open] summary::before{content:"▾ "}
+  .conf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 0 12px}
+  @media(max-width:620px){.conf-grid{grid-template-columns:1fr}}
+  .conf-card{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .conf-h{font-size:12.5px;color:var(--mut);margin-bottom:8px;font-weight:600}
+  .conf-h b{color:var(--txt)}
+  .conf-card .codes{display:flex;flex-wrap:wrap;gap:5px}
+  .conf-empty{color:var(--mut);font-size:12px;opacity:.7}
+  .conf-note{font-size:12px;color:var(--mut);text-align:center;padding:0 0 12px;margin:0}
   /* tutorial passo a passo */
   .tut{max-width:760px;margin:30px auto 6px;background:var(--glass);border:1px solid var(--line);
     border-radius:20px;padding:22px 22px 24px;backdrop-filter:blur(12px)}
@@ -356,7 +371,7 @@ const NAME2CODE=(function(){
 })();
 function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z]/g,"");}
 const FLAG_RE=/^\s*((?:[\u{1F1E6}-\u{1F1FF}]{2})|🏴[\u{E0000}-\u{E007F}]+|\p{Extended_Pictographic})/u;
-const PAGE_RE=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
+const PAGE_RE=/(?:p[áa]g(?:ina)?|pg|fls?|folha)\.?\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
 
 // ===== LINK DO GRUPO DE WHATSAPP =====
 // Quando criar o grupo, cole o link aqui dentro das aspas (ex: "https://chat.whatsapp.com/XXXXXXXX").
@@ -385,7 +400,7 @@ function parseList(text){
     // 1) Códigos completos em qualquer lugar (CODE + numero, sep opcional, MAIÚSC/minúsc)
     clean.replace(/([A-Za-z]{2,4})\s*[-–/]?\s*0*(\d{1,2})/g,(full,c,n)=>{
       const C=c.toUpperCase();
-      if(KNOWN.has(C)){ prefix=C; cur={flag:flag||cur.flag,name:C,page:pg?pg[1].replace(/\s/g,""):cur.page};
+      if(KNOWN.has(C) && +n>=1 && +n<=20){ prefix=C; cur={flag:flag||cur.flag,name:C,page:pg?pg[1].replace(/\s/g,""):cur.page};
         add(C+n,{flag:cur.flag,name:C,page:cur.page}); }
       return full;
     });
@@ -396,14 +411,14 @@ function parseList(text){
     const coreH=core.replace(/^[^A-Za-z]+/,"");                 // tira *,·,•,etc do início
     const mc=coreH.match(/^([A-Za-z]{2,4})\b/);
     if(mc && KNOWN.has(mc[1].toUpperCase())) head=mc[1].toUpperCase();
-    if(!head){ const nm=norm(core.split(/[:(]/)[0]); if(NAME2CODE[nm]) head=NAME2CODE[nm]; }
+    if(!head){ const nm=norm(core.replace(PAGE_RE," ").split(/[:(]/)[0]); if(NAME2CODE[nm]) head=NAME2CODE[nm]; }
     if(head){ prefix=head; cur={flag:flag||cur.flag,name:head,page:pg?pg[1].replace(/\s/g,""):(head!==cur.name?"":cur.page)}; }
     // 3) Números soltos -> prefixo + número
     if(prefix){
-      let rest=clean.replace(/[A-Za-z]{2,4}\s*[-–/]?\s*0*\d{1,2}/g," ")  // remove códigos completos já lidos
+      let rest=clean.replace(/([A-Za-z]{2,4})\s*[-–/]?\s*0*\d{1,2}/g,(full,c)=>KNOWN.has(c.toUpperCase())?" ":full)  // remove só códigos de país conhecidos já lidos
                     .replace(/^\s*[A-Za-z]{2,4}\b/," ");
       let mm; const bn=/\b(\d{1,2})\b/g;
-      while((mm=bn.exec(rest))!==null) add(prefix+mm[1],{flag:cur.flag,name:prefix,page:cur.page});
+      while((mm=bn.exec(rest))!==null){ const nv=+mm[1]; if(nv>=1&&nv<=20) add(prefix+mm[1],{flag:cur.flag,name:prefix,page:cur.page}); }
     }
   }
   return {codes,meta};
@@ -487,10 +502,26 @@ function run(){
      <button class="copy" onclick="copyList('pick')">📋 Copiar o que pego</button>
      <button class="copy" onclick="copyList('give')">📋 Copiar o que dou</button>
    </div>`;
+  const totRead=meRep.codes.size+meFalt.codes.size+frRep.codes.size+frFalt.codes.size;
+  html+=`<details class="conf">
+     <summary>🔎 Conferir o que o site leu (${totRead} figurinhas)</summary>
+     <div class="conf-grid">
+       ${confBlock('👤 '+esc(meName)+' — repetidas', meRep)}
+       ${confBlock('👤 '+esc(meName)+' — faltantes', meFalt)}
+       ${confBlock('🧑 '+esc(frName)+' — repetidas', frRep)}
+       ${confBlock('🧑 '+esc(frName)+' — faltantes', frFalt)}
+     </div>
+     <p class="conf-note">Confira se bate com a sua lista. Se faltou ou sobrou algo, o app de origem usou um formato diferente — avise no grupo pra gente ajustar.</p>
+   </details>`;
   document.getElementById('result').innerHTML=html;
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
+function confBlock(label,parsed){
+  const codes=Array.from(parsed.codes).sort(natSort);
+  const chips=codes.map(c=>`<span class="chip">${esc(c)}</span>`).join('');
+  return `<div class="conf-card"><div class="conf-h">${label} <b>(${codes.length})</b></div><div class="codes">${codes.length?chips:'<span class="conf-empty">vazio</span>'}</div></div>`;
+}
 function buildMsg(){
   const L=last;
   let m=`🏆 *Troca de Figurinhas — Copa 2026*\n\n`;
