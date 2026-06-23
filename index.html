@@ -152,6 +152,19 @@
   .step b{color:var(--txt);font-weight:600}
   .step .sn{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;
     color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
+  /* tutorial passo a passo */
+  .tut{max-width:760px;margin:30px auto 6px;background:var(--glass);border:1px solid var(--line);
+    border-radius:20px;padding:22px 22px 24px;backdrop-filter:blur(12px)}
+  .tut h2{font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .tut .sub{color:var(--mut);font-size:13px;margin:0 0 16px}
+  .tut ol{list-style:none;counter-reset:t;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .tut li{counter-increment:t;position:relative;padding:12px 14px 12px 50px;background:var(--glass2);
+    border:1px solid var(--line);border-radius:14px;font-size:14px;line-height:1.5}
+  .tut li::before{content:counter(t);position:absolute;left:12px;top:12px;width:26px;height:26px;border-radius:50%;
+    display:grid;place-items:center;font-weight:800;color:#04121f;background:linear-gradient(90deg,var(--grad1),#46e0c4)}
+  .tut li b{color:var(--txt);font-weight:700}
+  .tut .pick-tag{color:#7ef2c5}.tut .give-tag{color:#ffd479}
+  .tut .note{margin-top:14px;font-size:12.5px;color:var(--mut);text-align:center}
   footer{text-align:center;color:var(--mut);font-size:12px;padding:8px 0 30px;line-height:1.7}
   footer b{color:var(--txt)}
   .copyr{margin-top:10px;font-size:11px;color:var(--mut);opacity:.8}
@@ -270,13 +283,27 @@
 
   <div class="result" id="result"></div>
 
+  <section class="tut">
+    <h2>📲 Como usar — passo a passo</h2>
+    <p class="sub">Funciona com qualquer app de figurinha · 100% offline · nada sai do seu celular</p>
+    <ol>
+      <li>No <b>app do seu álbum</b>, copie sua lista de <b>repetidas</b> (as que sobram) e de <b>faltantes</b> (as que precisa).</li>
+      <li>Aqui no campo <b>👤 Você</b>, cole as repetidas num quadro e as faltantes no outro. Pode colar do jeito que vier ou digitar à mão.</li>
+      <li>Peça as listas do <b>amigo</b> e cole no campo <b>🧑 Amigo</b> (repetidas e faltantes dele).</li>
+      <li>Toque em <b>⚡ Comparar troca</b>.</li>
+      <li>Pronto! Aparece o que você <b class="pick-tag">RECEBE</b> do amigo e o que você <b class="give-tag">ENVIA</b> pra ele — já separado por país, bandeira e página do álbum.</li>
+      <li>Toque em <b>💬 Compartilhar no WhatsApp</b> e mande o resultado pro amigo ou pro grupo.</li>
+    </ol>
+    <p class="note">Não precisa de cadastro nem internet pra comparar. Os nomes dos países, bandeiras e páginas aparecem sozinhos. 🟢</p>
+  </section>
+
   <div class="grupo">
     <div class="grupo-ico">💬</div>
     <div class="grupo-txt">
-      <b>Grupo de Trocas no WhatsApp</b>
-      <span>Em breve! Entre pra trocar figurinhas com a galera e bombar as coleções 🟢⚽</span>
+      <b>Grupo de Trocas no WhatsApp — Maricá e Regiões</b>
+      <span>Entre pra trocar figurinhas com a galera e bombar as coleções 🟢⚽</span>
     </div>
-    <button class="grupo-btn" onclick="entrarGrupo()">Entrar no grupo <span class="soon">EM BREVE</span></button>
+    <button class="grupo-btn" onclick="entrarGrupo()">Entrar no grupo 🟢</button>
   </div>
 
   <blockquote class="verse">
@@ -334,7 +361,7 @@ const PAGE_RE=/pg\.\s*([\d]+(?:\s*[\-–]\s*[\d]+)?)/i;
 // ===== LINK DO GRUPO DE WHATSAPP =====
 // Quando criar o grupo, cole o link aqui dentro das aspas (ex: "https://chat.whatsapp.com/XXXXXXXX").
 // Enquanto vazio, o botão mostra "em breve".
-const WHATSAPP_GROUP = "";
+const WHATSAPP_GROUP = "https://chat.whatsapp.com/KPUrMtuXlOKKRIjcSlbhE2";
 function entrarGrupo(){
   if(WHATSAPP_GROUP){ window.open(WHATSAPP_GROUP,"_blank","noopener"); }
   else { toast("Grupo em breve! 🟢 Logo logo abre 😉"); }
